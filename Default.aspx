@@ -17,6 +17,8 @@
     <div>
     
         <img alt="logo" class="auto-style1" src="Assets/logo.png" /></div>
+        <asp:TextBox ID="tbSearchField" runat="server" Width="400px"></asp:TextBox>
+        <asp:Button ID="btnSearch" runat="server" Text="Button" />
     </form>
 </body>
 </html>
