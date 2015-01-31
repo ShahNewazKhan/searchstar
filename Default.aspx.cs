@@ -10,8 +10,10 @@ public partial class _Default : System.Web.UI.Page
 {
     private const string exclusionRelDir = @"./SearchStar/exclusion/exclusion.txt";
     private string[] exclusionList;
-    private List<string> returnedFileDirs;
+    private List<string> returnedFileDirs = null;
     private int listPosition;
+
+
     protected void Page_Load(object sender, EventArgs e)
     {
         //read in exclusion file    
@@ -34,34 +36,45 @@ public partial class _Default : System.Web.UI.Page
     protected void btnSearch_Click(object sender, EventArgs e)
     {
         returnedFileDirs = new List<string>();
+        
         //get search string
         string searchString = txtbxSearch.Text;
-        //remove the unwanted words from the search string
-        string[] searchWords = removeIgnoredWords(searchString.Split(' '));
-        //get all of the dirs to all the files
-        string[] fileList = Directory.GetFiles(MapPath("./SearchStar/files/"));
 
-        //go through all files and find matching words to them
-        foreach (string fileDir in fileList)
+        if (searchString == String.Empty)
         {
-            if (findMatches(fileDir, searchWords))
-            {
-                returnedFileDirs.Add(fileDir);
-            }
+            lblErrorMessage.Text = "To search, please enter data into the search box";
         }
+        else
+        {
+            lblErrorMessage.Text = "";
+            //remove the unwanted words from the search string
+            string[] searchWords = removeIgnoredWords(searchString.Split(' '));
+            //get all of the dirs to all the files
+            string[] fileList = Directory.GetFiles(MapPath("./SearchStar/files/"));
 
-        //return first file back to screen and set appropriate buttons
-        string dirToShow = returnedFileDirs.ElementAt(listPosition);
-        txtbxPageContent.Text = File.ReadAllText(dirToShow);
+            //go through all files and find matching words to them
+            foreach (string fileDir in fileList)
+            {
+                if (findMatches(fileDir, searchWords))
+                {
+                    returnedFileDirs.Add(fileDir);
+                }
+            }
 
-        //update the buttons
-        updateButtons();
+            //return first file back to screen and set appropriate buttons
+            string dirToShow = returnedFileDirs.ElementAt(listPosition);
+            txtbxPageContent.Text = File.ReadAllText(dirToShow);
 
-        //update the labels
-        updateLabels(dirToShow);
+            //update the buttons
+            updateButtons();
 
-        //save state to session
-        saveToSession();
+            //update the labels
+            updateLabels(dirToShow);
+
+            //save state to session
+            saveToSession();
+        }
+        
 
     }
     // saves the array and what position the user currently is in the list to the session
@@ -217,20 +230,41 @@ public partial class _Default : System.Web.UI.Page
 
     protected void imgBtnPrint_Click(object sender, ImageClickEventArgs e)
     {
-        Session["print_data"] = returnedFileDirs.ElementAt(listPosition);
-        Response.Redirect("PrintPage.aspx"); 
+        string content = txtbxPageContent.Text;
+        if (String.IsNullOrEmpty(content))
+        {
+            lblErrorMessage.Text = "You must have a file loaded in order to print it";
+        }
+        else
+        {
+            lblErrorMessage.Text = "";
+            Session["print_data"] = returnedFileDirs.ElementAt(listPosition);
+            Response.Redirect("PrintPage.aspx"); 
+        }
+        
     }
     protected void imgbtnSave_Click(object sender, ImageClickEventArgs e)
     {
-        string dirToShow = returnedFileDirs.ElementAt(listPosition);
+        string content = txtbxPageContent.Text;
+        if (String.IsNullOrEmpty(content))
+        {
+            lblErrorMessage.Text = "You must have a file loaded in order to download it";
+        }
+        else
+        {
+            lblErrorMessage.Text = "";
+            string dirToShow = returnedFileDirs.ElementAt(listPosition);
 
-        System.Web.HttpResponse response = System.Web.HttpContext.Current.Response;
-        response.ClearContent();
-        response.Clear();
-        response.ContentType = "text/plain";
-        response.AddHeader("Content-Disposition", "attachment; filename=" + Path.GetFileName(dirToShow) + ";");
-        response.TransmitFile(dirToShow);
-        response.Flush();
-        response.End();
+            System.Web.HttpResponse response = System.Web.HttpContext.Current.Response;
+            response.ClearContent();
+            response.Clear();
+            response.ContentType = "text/plain";
+            response.AddHeader("Content-Disposition", "attachment; filename=" + Path.GetFileName(dirToShow) + ";");
+            response.TransmitFile(dirToShow);
+            response.Flush();
+            response.End();
+        }
+        
     }
+
 }

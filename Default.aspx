@@ -35,8 +35,21 @@
         <asp:ImageButton ID="imgbtnSave" runat="server" Height="46px" ImageUrl="~/Images/save-icon.png" OnClick="imgbtnSave_Click" Width="53px" />
         <br />
 
-        <asp:RequiredFieldValidator ID="vldTxtSearch" ControlToValidate="txtbxSearch" Text="Must enter search content to search" runat="server" ForeColor="Red"/>
+        
+        
+
+        <p>
+            &nbsp;</p>
+
+        
+        
+
+        <asp:Label ID="lblErrorMessage" runat="server" ForeColor="Red"></asp:Label>
+
+        
+        
 
     </form>
+
 </body>
 </html>
