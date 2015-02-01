@@ -52,10 +52,24 @@ public partial class _Default : System.Web.UI.Page
             System.IO.StreamReader rdr = new System.IO.StreamReader(arrFiles[ndx]);
 
             string fileContents = rdr.ReadToEnd();
+            bool found = false;
 
             for (int i = 0; i < searchTerm.Count; i++ )
-                if ( fileContents.Contains( searchTerm[i] ) )
-                    filesFound.Add( arrFiles[ndx] );
+            {
+                if (fileContents.Contains(searchTerm[i]))
+                {
+                    found = true;
+                }
+                else
+                {
+                    break;
+                }
+                    
+            }
+
+            if (found)
+                filesFound.Add(arrFiles[ndx]);
+                
 
             taFileBody.InnerText = "Files found: " + filesFound.Count.ToString();
         }

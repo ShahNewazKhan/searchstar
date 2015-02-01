@@ -24,15 +24,20 @@
         }
         #taFileBody {
             height: 487px;
-            width: 880px;
+            width: 907px;
         }
     </style>
 </head>
 <body>
     <form id="form1" runat="server">
-    <div>
     
-        <img alt="logo" class="auto-style1" src="Assets/logo.png" /></div>
+     <div style="text-align:center;">   
+        <div>
+    
+            <img alt="logo" class="auto-style1" src="Assets/logo.png" />
+
+        </div>
+
         <asp:TextBox ID="tbSearchField" runat="server" Width="443px"></asp:TextBox>
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
         <asp:Button ID="btnSearch" runat="server" OnClick="btnSearch_Click" Text="search" />
@@ -47,9 +52,13 @@
         <asp:Label ID="lblDocumentName" runat="server" BackColor="White" Text="Document Name" Width="450px"></asp:Label>
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
         <asp:Label ID="lblPageOf" runat="server" BackColor="White" Text="File 1 of 5"></asp:Label>
-        &nbsp;&nbsp;
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <asp:ImageButton ID="btnPrint" runat="server" Height="60px" ImageUrl="~/Assets/printer.png" />
+        &nbsp;&nbsp;&nbsp;
+        <asp:ImageButton ID="btnSave" runat="server" Height="60px" ImageUrl="~/Assets/save.png" />
         <br />
         <br />
         <textarea id="taFileBody" name="S1" runat="server"></textarea></form>
+    </div>
 </body>
 </html>
