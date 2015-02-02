@@ -10,8 +10,13 @@ public partial class _Default : System.Web.UI.Page
 {
 
     protected List<string> exclusions = new List<string>(); // List to all the exclusion words
-    protected List<string> filesFound = new List<string>(); // List of files with search term
+    protected static List<string> filesFound = new List<string>(); // List of files with search term
+    protected static List<string> filesFound2 = new List<string>(); //List of files found with short path name
     protected List<string> searchTerm = new List<string>(); // List of search terms
+
+    protected System.IO.StreamReader rdr;
+
+    protected static int currentFile;
 
     protected void Page_Load(object sender, EventArgs e)
     {
@@ -24,9 +29,12 @@ public partial class _Default : System.Web.UI.Page
     }
     
     protected void btnSearch_Click(object sender, EventArgs e)
-    {
-
+    {        
         searchTerm = tbSearchField.Text.Split(' ').ToList<string>();
+
+        //Exit if search term contains black space since it's alreay Split with ' '
+        if (searchTerm.Contains(""))
+            return;
 
         for (int i = 0; i < exclusions.Count; i++)
         {
@@ -49,7 +57,7 @@ public partial class _Default : System.Web.UI.Page
             // Required if the filename contains any spaces, etc.
             strFile = Server.UrlPathEncode(strFile);
 
-            System.IO.StreamReader rdr = new System.IO.StreamReader(arrFiles[ndx]);
+            rdr = new System.IO.StreamReader(arrFiles[ndx]);
 
             string fileContents = rdr.ReadToEnd();
             bool found = false;
@@ -68,11 +76,105 @@ public partial class _Default : System.Web.UI.Page
             }
 
             if (found)
+            {
                 filesFound.Add(arrFiles[ndx]);
+                filesFound2.Add(strFile);
+            }
                 
-
-            taFileBody.InnerText = "Files found: " + filesFound.Count.ToString();
         }
 
+        if (filesFound.Count > 0)
+        {
+            currentFile = 1;
+
+            lblDocumentName.Text = filesFound2[0];
+            lblPageOf.Text = currentFile + " of " + filesFound.Count.ToString();
+            rdr = new System.IO.StreamReader(filesFound[0]);
+            taFileBody.InnerText = rdr.ReadToEnd();
+
+            btnFirst.Enabled = false;
+            btnBack.Enabled = false;
+        }
+    }
+    protected void btnFirst_Click(object sender, ImageClickEventArgs e)
+    {
+        if(filesFound.Count() > 0)
+        {
+            currentFile = 1;
+
+            lblDocumentName.Text = filesFound2[0];
+            lblPageOf.Text = currentFile + " of " + filesFound.Count.ToString();
+            rdr = new System.IO.StreamReader(filesFound[0]);
+            taFileBody.InnerText = rdr.ReadToEnd();
+
+            btnFirst.Enabled = false;
+            btnBack.Enabled = false;
+
+            btnLast.Enabled = true;
+            btnNext.Enabled = true;
+        }
+    }
+    protected void btnLast_Click(object sender, ImageClickEventArgs e)
+    {
+        if (filesFound.Count() > 0)
+        {
+            currentFile = filesFound.Count;
+
+            lblDocumentName.Text = filesFound2[ currentFile - 1 ];
+            lblPageOf.Text = currentFile + " of " + filesFound.Count.ToString();
+            rdr = new System.IO.StreamReader(filesFound[currentFile - 1]);
+            taFileBody.InnerText = rdr.ReadToEnd();
+
+            btnLast.Enabled = false;
+            btnNext.Enabled = false;
+
+            btnFirst.Enabled = true;
+            btnBack.Enabled = true;
+        }
+
+        taFileBody.InnerText = taFileBody.InnerText + " \n Button Back is " + btnBack.Enabled.ToString() +
+            "\n CurrentFile is " + currentFile.ToString();
+    }
+    protected void btnBack_Click(object sender, ImageClickEventArgs e)
+    {
+        lblDocumentName.Text = currentFile.ToString();
+        if (filesFound.Count() > 0 && currentFile > 1)
+        {
+            currentFile = --currentFile;
+
+            lblDocumentName.Text = filesFound2[currentFile - 1];
+            lblPageOf.Text = currentFile + " of " + filesFound.Count.ToString();
+            rdr = new System.IO.StreamReader(filesFound[currentFile - 1]);
+            taFileBody.InnerText = rdr.ReadToEnd();
+
+            btnLast.Enabled = true;
+            btnNext.Enabled = true;
+        }
+        else if( currentFile == 1 )
+        {
+            btnFirst.Enabled = false;
+            btnBack.Enabled = false;
+        }
+    }
+    protected void btnNext_Click(object sender, ImageClickEventArgs e)
+    {
+        lblDocumentName.Text = "Next clicked";
+        if (filesFound.Count() > 0 && currentFile < filesFound.Count() )
+        {
+            currentFile = ++currentFile;
+
+            lblDocumentName.Text = filesFound2[currentFile - 1];
+            lblPageOf.Text = currentFile + " of " + filesFound.Count.ToString();
+            rdr = new System.IO.StreamReader(filesFound[currentFile - 1]);
+            taFileBody.InnerText = rdr.ReadToEnd();
+
+            btnFirst.Enabled = true;
+            btnBack.Enabled = true;
+        }
+        else if( currentFile == filesFound.Count())
+        {
+            btnLast.Enabled = false;
+            btnNext.Enabled = false;
+        }
     }
 }
